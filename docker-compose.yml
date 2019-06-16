@@ -1,13 +1,17 @@
 version: "3"
 services:
   spark:
-    image: jupyter/sparkmagic-livy
-    build:
-      context: .
-      dockerfile: Dockerfile.spark
+#    image: jupyter/sparkmagic-livy
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.spark
+### Use prebuilt image instead
+    image: peralozac/sparkmagic_spark:latest
     hostname: spark
     ports:
       - "8998:8998"
+    volumes:
+      - $PWD/data:/home/jovyan/data
   jupyter:
     image: jupyter/sparkmagic
     build:
@@ -19,3 +23,9 @@ services:
       - spark
     ports:
       - "8888:8888"
+    volumes:
+      - $PWD/data:/home/jovyan/data
+    user: root
+    command: "start-notebook.sh --NotebookApp.iopub_data_rate_limit=1000000000"
+    environment:
+      - GRANT_SUDO=yes
